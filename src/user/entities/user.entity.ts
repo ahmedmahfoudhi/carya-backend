@@ -1,11 +1,13 @@
 import { IsEmail, IsNumberString, Length, MinLength } from 'class-validator';
 import { RolesEnum } from 'src/user/enums/user-roles.enum';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Timestamp } from 'src/generics/timestamp.entity';
 import Offer from 'src/offer/entities/offer.entity';
 
 @Entity()
 class User extends Timestamp{
+
+
     @PrimaryGeneratedColumn()
     id: number;
     
@@ -57,5 +59,7 @@ class User extends Timestamp{
   role: RolesEnum;
 
 }
+
+
 
 export default User;

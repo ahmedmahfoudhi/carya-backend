@@ -1,11 +1,12 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dtos/create-user.dto';
 import { UserService } from 'src/user/user.service';
-import * as bcrypt from 'bcrypt';
+
 import { JwtPayloadDto } from './dtos/jwt-payload.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RolesEnum } from 'src/user/enums/user-roles.enum';
 import { LoginUserDto } from './dtos/login-user.dto';
+import { comparePasswords, hashPassword } from 'src/generics/password-bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -13,16 +14,8 @@ export class AuthService {
 
     async register(createUserDto: CreateUserDto): Promise<any>{
 
-        // get user password
-        const password = createUserDto.password;
-
-        //generate salt
-        const salt = await bcrypt.genSalt(10);
-
-        // hash password 
-        const hashedPassword = await bcrypt.hash(password,salt);
-
-        // use the hashed password as the new password
+        const plainTextPassword = createUserDto.password;
+        const hashedPassword = await hashPassword(plainTextPassword);
         createUserDto.password = hashedPassword;
 
         // call the method responsible for adding the user in the db and return the result
@@ -44,7 +37,10 @@ export class AuthService {
             throw new UnauthorizedException(`Wrong credentials`);
         }
 
-        await this.verifyPassword(password,user.password);
+        const passwordComparaison = await comparePasswords(password,user.password);
+        if(!passwordComparaison){
+          throw new UnauthorizedException('Wrong credentials');
+        }
 
         const access_token = this.generateToken(user.email,user.role,user.password);
         user.password = undefined;
@@ -57,7 +53,13 @@ export class AuthService {
     public async getAuthenticatedUser(email: string, plainTextPassword: string) {
         try {
           const user = await this.userService.getUserByEmail(email);
-          await this.verifyPassword(plainTextPassword, user.password);
+          if(!user){
+            throw new UnauthorizedException('Wrong credentials!')
+          }
+          const passwordComparaison = await comparePasswords(plainTextPassword,user.password);
+          if(!passwordComparaison){
+            throw new UnauthorizedException('Wrong credentials');
+          }
           user.password = undefined;
           const access_token = this.generateToken(user.email,user.role,user.password);
           const {password, ...result} = user;
@@ -70,15 +72,7 @@ export class AuthService {
         }
       }
        
-      private async verifyPassword(plainTextPassword: string, hashedPassword: string) {
-        const isPasswordMatching = await bcrypt.compare(
-          plainTextPassword,
-          hashedPassword
-        );
-        if (!isPasswordMatching) {
-          throw new HttpException('Wrong credentials!', HttpStatus.BAD_REQUEST);
-        }
-      }
+
 
 
       generateToken = (email:string,role:RolesEnum,password:string) => {

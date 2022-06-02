@@ -20,15 +20,10 @@ export class UserService {
 
     // returns user found by his email
     async getUserByEmail(email: string): Promise<User>{
-        const user = await this.userRepository.findOne({
-            where: {
-                email: email,
-            }
-        });
+        const user = await this.userRepository.findOneBy({email});
         if(!user){
             throw new NotFoundException('user does not exist');
         }
-        user.password = undefined;
         return user;
     }
 
@@ -36,13 +31,10 @@ export class UserService {
     // returns a user found by his id
     async getUserById(id:number): Promise<User>{
         console.log(id);
-        const user = await this.userRepository.findOneBy({
-            id:id
-        });
+        const user = await this.userRepository.findOneBy({id});
         if(!user){
             throw new NotFoundException(`user with id ${id} does not exist`);
         }
-        user.password = undefined;
         return user;
     }
 
