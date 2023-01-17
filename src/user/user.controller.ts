@@ -44,8 +44,8 @@ export class UserController {
     const id = getUserId(user.role, user._id.toString(), userId);
     return await this.userService.deleteUser(id);
   }
-  // @Roles(UserRolesEnum.ADMIN)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // // @Roles(UserRolesEnum.ADMIN)
+  // // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Get('')
   // getMe(@GetUser() user: UserDocument) {
   //   return user;
