@@ -5,7 +5,7 @@ export type ItemDocument= Item & Document ;
 @Schema({timestamps:true})
 export class Item {
 @Prop({required:true})
-price:string;
+Price:string;
 
 @Prop({required:true})
 City:string;

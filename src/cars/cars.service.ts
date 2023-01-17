@@ -41,7 +41,13 @@ export class CarsService {
     throw new NotFoundException(`Car with id ${id} does not exist`);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} car`;
+  async remove(id: string) :Promise<any> {
+    const deletedCar = await this.carModel.findByIdAndRemove(id);
+    if (!deletedCar) {
+      throw new NotFoundException('Car to delete not found');
+    }
+    return deletedCar;
   }
+
+  
 }

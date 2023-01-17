@@ -6,6 +6,13 @@ export type CarDocument= Car & Document;
 
 @Schema()
 export class Car extends Item {
+
+@Prop({required:true})
+Modele:string;
+
+@Prop({required:true})
+Marque:string;
+
 @Prop()
 Mileage:number;
 

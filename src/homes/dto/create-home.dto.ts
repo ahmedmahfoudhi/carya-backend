@@ -1,12 +1,9 @@
 import {
     IsNotEmpty, IsOptional,
   } from 'class-validator';
-export class CreateCarDto {
+export class CreateHomeDto {
     @IsNotEmpty()
-    Modele: string;
-
-    @IsNotEmpty()
-    Marque: string
+    Rooms: number;
 
     @IsNotEmpty()
     price: string
@@ -21,14 +18,8 @@ export class CreateCarDto {
     Images: string[]
 
     @IsOptional()
-    Mileage: number
+    Furnitured: string
 
     @IsOptional()
-    Seats: number
-
-    @IsOptional()
-    Fuel: string
-
-    @IsOptional()
-    Transmision: string
+    Category: string
 }
