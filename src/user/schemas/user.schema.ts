@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail, MinLength } from 'class-validator';
 import mongoose, { Document, HydratedDocument, Types } from 'mongoose';
+import { Car, CarDocument } from 'src/item/schemas/car.entity';
+import { Home, HomeDocument } from 'src/item/schemas/home.entity';
 import { hashPassword } from 'src/shared/handle-password';
 import { UserRolesEnum } from '../enums/user-role.enum';
 
@@ -27,6 +29,12 @@ export class User {
 
   @Prop({ default: UserRolesEnum.USER })
   role: UserRolesEnum;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: Car.name }] })
+  cars: CarDocument[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: Home.name }] })
+  homes: HomeDocument[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -38,5 +46,20 @@ UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   const hashedPassword = await hashPassword(this.password);
   this.password = hashedPassword;
+  next();
+});
+
+/**
+ * populate cars and homes
+ */
+UserSchema.pre('findOne', function (next) {
+  this.populate('cars');
+  this.populate('homes');
+  next();
+});
+
+UserSchema.pre('find', function (next) {
+  this.populate('cars');
+  this.populate('homes');
   next();
 });
