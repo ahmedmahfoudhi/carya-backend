@@ -49,7 +49,7 @@ export class AuthService {
     return {
       token: this.jwtService.sign(userPayload),
       email: user.email,
-      expriresIn: this.configService.get('EXPIRATION_TIME'),
+      expiresIn: +this.configService.get('EXPIRATION_TIME'),
     };
   }
 }

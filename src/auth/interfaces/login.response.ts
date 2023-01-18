@@ -1,5 +1,5 @@
 export interface LoginResponse {
   token: string;
-  expriresIn: string;
+  expiresIn: number;
   email: string;
 }
