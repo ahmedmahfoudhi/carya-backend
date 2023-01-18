@@ -5,6 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CarDocument } from 'src/item/schemas/car.entity';
+import { HomeDocument } from 'src/item/schemas/home.entity';
+import { ItemDocument } from 'src/item/schemas/item.entity';
+import { RentRequestDocument } from 'src/rent-request/schemas/rent-request.entity';
 import { hashPassword } from 'src/shared/handle-password';
 import { GenericResponse } from 'src/shared/interfaces/response';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -70,5 +74,72 @@ export class UserService {
       message: [`User with id ${id} has been deleted successfully`],
       successCode: 200,
     };
+  }
+
+  async addCarToUser(userId: string, createdCarId: string): Promise<User> {
+    const user = this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { $push: { cars: createdCarId } },
+      { new: true },
+    );
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+    return user;
+  }
+
+  async addHomeToUser(userId: string, createdHomeId: string): Promise<User> {
+    const user = this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { $push: { homes: createdHomeId } },
+      { new: true },
+    );
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+    return user;
+  }
+
+  async getUserCars(userId: string): Promise<CarDocument[]> {
+    const user = await this.userModel.findOne(
+      { _id: userId },
+      { cars: 1 },
+      { populate: 'cars' },
+    );
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+    const cars = user.cars;
+    return cars;
+  }
+
+  async getUserHomes(userId: string): Promise<HomeDocument[]> {
+    const user = await this.userModel.findOne(
+      { _id: userId },
+      { homes: 1 },
+      { populate: 'homes' },
+    );
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+    const homes = user.homes;
+    return homes;
+  }
+
+  async getUserItems(userId: string): Promise<ItemDocument[]> {
+    const user = await this.userModel.findOne(
+      {
+        _id: userId,
+      },
+      { homes: 1, cars: 1 },
+      { populate: ['homes', 'cars'] },
+    );
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+    const cars: ItemDocument[] = user.cars;
+    const homes: ItemDocument[] = user.homes;
+    const result = [...cars, ...homes];
+    return result;
   }
 }

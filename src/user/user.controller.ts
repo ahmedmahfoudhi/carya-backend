@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ItemDocument } from 'src/item/schemas/item.entity';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
@@ -33,6 +34,17 @@ export class UserController {
     const id = getUserId(user.role, user._id.toString(), userId);
     return await this.userService.updateUser(id, updateUserDto);
   }
+  @Roles(UserRolesEnum.USER, UserRolesEnum.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('items')
+  async getUserItems(
+    @GetUser() user: UserDocument,
+    @Query('userId') userId: string,
+  ): Promise<ItemDocument[]> {
+    console.log('inside get items');
+    const id = getUserId(user.role, user._id.toString(), userId);
+    return await this.userService.getUserItems(id);
+  }
 
   @Roles(UserRolesEnum.USER, UserRolesEnum.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -44,6 +56,7 @@ export class UserController {
     const id = getUserId(user.role, user._id.toString(), userId);
     return await this.userService.deleteUser(id);
   }
+
   // // @Roles(UserRolesEnum.ADMIN)
   // // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Get('')

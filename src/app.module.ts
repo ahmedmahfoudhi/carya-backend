@@ -3,10 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CarsModule } from './cars/cars.module';
-import { HomesModule } from './homes/homes.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { RentRequestModule } from './rent-request/rent-request.module';
+import { ItemController } from './item/item.controller';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -21,12 +22,12 @@ import { UserModule } from './user/user.module';
       }),
       inject: [ConfigService],
     }),
-    CarsModule,
-    HomesModule,
     AuthModule,
     UserModule,
+    RentRequestModule,
+    ItemModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ItemController],
   providers: [AppService],
 })
 export class AppModule {}
