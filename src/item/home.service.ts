@@ -4,6 +4,7 @@ import { CreateHomeDto } from './dto/create-home.dto';
 import { UpdateHomeDto } from './dto/update-home.dto';
 import { Home, HomeDocument } from './schemas/home.entity';
 import { Model } from 'mongoose';
+import { BadRequestException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class HomeService {
@@ -22,12 +23,16 @@ export class HomeService {
     return await this.HomeModel.find();
   }
 
-  async findOne(id: string): Promise<HomeDocument> {
-    const result = await this.HomeModel.findOne({ _id: id });
-    if (result) {
-      return result;
+  async getHomeById(id: string): Promise<HomeDocument> {
+    try {
+      const result = await this.HomeModel.findOne({ _id: id });
+      if (result) {
+        return result;
+      }
+      throw new NotFoundException(`Home with id ${id} does not exist`);
+    } catch (error) {
+      throw new BadRequestException('Invalid ID');
     }
-    throw new NotFoundException(`Home with id ${id} does not exist`);
   }
 
   async update(

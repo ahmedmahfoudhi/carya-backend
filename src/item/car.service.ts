@@ -4,6 +4,7 @@ import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { Car, CarDocument } from './schemas/car.entity';
 import { Model } from 'mongoose';
+import { BadRequestException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class CarService {
@@ -21,16 +22,20 @@ export class CarService {
     return result;
   }
 
-  async findAll(): Promise<Car[]> {
+  async findAll(): Promise<CarDocument[]> {
     return await this.carModel.find();
   }
 
-  async findOne(id: string): Promise<Car> {
-    const result = await this.carModel.findOne({ _id: id });
-    if (result) {
-      return result;
+  async getCarById(id: string): Promise<CarDocument> {
+    try {
+      const result = await this.carModel.findOne({ _id: id });
+      if (result) {
+        return result;
+      }
+      throw new NotFoundException(`Car with id ${id} does not exist`);
+    } catch (error) {
+      throw new BadRequestException('Invalid ID');
     }
-    throw new NotFoundException(`Car with id ${id} does not exist`);
   }
 
   async update(id: string, updateCarDto: UpdateCarDto): Promise<CarDocument> {

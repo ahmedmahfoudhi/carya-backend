@@ -26,7 +26,6 @@ export class AuthService {
   }
 
   async loginUser(loginDto: LoginDto): Promise<LoginResponse> {
-    console.log(loginDto);
     const user = await this.userService.findUserByEmail(loginDto.email);
     if (!user) {
       throw new UnauthorizedException('Verify your credentials');

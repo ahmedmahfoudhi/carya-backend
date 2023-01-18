@@ -41,7 +41,7 @@ export class RentRequestService {
     const rentRequests = await this.rentRequestModel.find(
       { user: userId },
       {},
-      { populate: ['user', 'item'] },
+      { populate: ['item'] },
     );
     return rentRequests;
   }

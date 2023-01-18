@@ -7,7 +7,7 @@ export type ItemDocument = HydratedDocument<Item>;
 @Schema({ timestamps: true })
 export class Item {
   @Prop({ required: true })
-  price: string;
+  price: number;
 
   @Prop({ required: true })
   city: string;

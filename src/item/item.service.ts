@@ -9,6 +9,7 @@ import { UserService } from 'src/user/user.service';
 import { CarService } from './car.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { CreateHomeDto } from './dto/create-home.dto';
+import { GetAllItemsQueryParams } from './dto/get-all-items-query-params';
 import { HomeService } from './home.service';
 import { Car, CarDocument } from './schemas/car.entity';
 import { Home, HomeDocument } from './schemas/home.entity';
@@ -58,5 +59,28 @@ export class ItemService {
       throw new BadRequestException('Item does not exist');
     }
     return item;
+  }
+
+  async getAllItems(queryParam: GetAllItemsQueryParams): Promise<any> {
+    const items = await this.itemModel.find({});
+    const filteredItems = items.filter((item: any) => {
+      let result = true;
+      if (queryParam.minPrice && queryParam.maxPrice) {
+        result =
+          item.price >= queryParam.minPrice &&
+          item.price <= queryParam.maxPrice;
+      }
+      if (queryParam.category) {
+        result =
+          result && item.__t.toLowerCase() == queryParam.category.toLowerCase();
+      }
+      if (queryParam.governorate) {
+        result =
+          result &&
+          item.city.toLowerCase() == queryParam.governorate.toLowerCase();
+      }
+      return result;
+    });
+    return filteredItems;
   }
 }

@@ -48,18 +48,3 @@ UserSchema.pre('save', async function (next) {
   this.password = hashedPassword;
   next();
 });
-
-/**
- * populate cars and homes
- */
-UserSchema.pre('findOne', function (next) {
-  this.populate('cars');
-  this.populate('homes');
-  next();
-});
-
-UserSchema.pre('find', function (next) {
-  this.populate('cars');
-  this.populate('homes');
-  next();
-});
