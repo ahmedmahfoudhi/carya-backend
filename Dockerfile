@@ -2,8 +2,8 @@
 FROM node:18-alpine  
 
 # Environment variables
-ENV DB_URI=mongodb+srv://carya:carya@carya-db.zphgotc.mongodb.net/?retryWrites=true&w=majority \
-    SECRET=carya
+ENV DB_URI= $DB_URI\
+    SECRET=$AUTH_SECRET
 
 #Create app directory
 WORKDIR /usr/src/app
